@@ -138,6 +138,7 @@ class FastAPIKeycloak:
             admin_client_id: str = "admin-cli",
             scope: str = "openid profile email",
             timeout: int = 10,
+            verify: str | bool = False
     ):
         """FastAPIKeycloak constructor
 
@@ -163,6 +164,7 @@ class FastAPIKeycloak:
         self.timeout = timeout
         self.scope = scope
         self._get_admin_token()  # Requests an admin access token on startup
+        self.verify = verify
 
     @property
     def admin_token(self):
@@ -288,6 +290,7 @@ class FastAPIKeycloak:
         response = requests.get(
             url=f"{self.realm_uri}/.well-known/openid-configuration",
             timeout=self.timeout,
+            verify=self.verify,
         )
         return response.json()
 
