@@ -163,8 +163,8 @@ class FastAPIKeycloak:
         self.callback_uri = callback_uri
         self.timeout = timeout
         self.scope = scope
-        self._get_admin_token()  # Requests an admin access token on startup
         self.verify = verify
+        self._get_admin_token()  # Requests an admin access token on startup
 
     @property
     def admin_token(self):
