@@ -328,6 +328,7 @@ class FastAPIKeycloak:
             data=json.dumps(payload),
             headers=headers,
             timeout=self.timeout,
+            verify=self.verify
         )
 
     def _get_admin_token(self) -> None:
@@ -349,7 +350,7 @@ class FastAPIKeycloak:
             "client_secret": self.admin_client_secret,
             "grant_type": "client_credentials",
         }
-        response = requests.post(url=self.token_uri, headers=headers, data=data, timeout=self.timeout)
+        response = requests.post(url=self.token_uri, headers=headers, data=data, timeout=self.timeout, verify=self.verify)
         try:
             self.admin_token = response.json()["access_token"]
         except JSONDecodeError as e:
@@ -371,7 +372,7 @@ class FastAPIKeycloak:
         Returns:
             str: Public key for JWT decoding
         """
-        response = requests.get(url=self.realm_uri, timeout=self.timeout)
+        response = requests.get(url=self.realm_uri, timeout=self.timeout, verify=self.verify)
         public_key = response.json()["public_key"]
         return f"-----BEGIN PUBLIC KEY-----\n{public_key}\n-----END PUBLIC KEY-----"
 
@@ -987,7 +988,7 @@ class FastAPIKeycloak:
             "grant_type": "password",
             "scope": self.scope,
         }
-        response = requests.post(url=self.token_uri, headers=headers, data=data, timeout=self.timeout)
+        response = requests.post(url=self.token_uri, headers=headers, data=data, timeout=self.timeout, verify=self.verify)
         if response.status_code == 401:
             raise HTTPException(status_code=401, detail="Invalid user credentials")
         if response.status_code == 400:
@@ -1038,7 +1039,7 @@ class FastAPIKeycloak:
             "grant_type": "authorization_code",
             "redirect_uri": self.callback_uri,
         }
-        return requests.post(url=self.token_uri, headers=headers, data=data, timeout=self.timeout)
+        return requests.post(url=self.token_uri, headers=headers, data=data, timeout=self.timeout, verify=self.verify)
 
     def _admin_request(
             self,
